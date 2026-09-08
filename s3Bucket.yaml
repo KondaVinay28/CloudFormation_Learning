@@ -1,0 +1,7 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Provisioning s3 buckets using CFT
+Resources:
+  Mys3bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: s3bucketfromcli-8th-sept
