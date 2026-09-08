@@ -1,0 +1,9 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating an IAM Group using CFT
+Resources:
+  IamGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: test-group
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess

@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating an IAM User using CFT
+Resources:
+  IamUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: Test.User1@cft
+      LoginProfile:
+        Password: Test.User@123
+        PasswordResetRequired: true
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/IAMUserChangePassword
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
