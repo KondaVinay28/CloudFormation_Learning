@@ -7,6 +7,15 @@ Parameters:
     Type: String
     Default: 10.0.0.0/16
 
+  # Menu for selecting AZ's
+  TargetAZForweb1:
+    Description: Select an AZ from the menu
+    Type: AWS::EC2::AvailabilityZone::Name
+
+  TargetAZFordb1:
+    Description: Select an AZ from the menu
+    Type: AWS::EC2::AvailabilityZone::Name
+
   web1cidr:
     Description: Subnets CIDR
     Type: String
@@ -42,16 +51,17 @@ Resources:
 
   # Create subnets
 
-  web1:
+  web1subnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcUsingCFT
       CidrBlock: !Ref web1cidr
+      AvailabilityZone: !Ref TargetAZForweb1
       Tags:
         - Key: Name
           Value: webserver-1
 
-  web2:
+  web2subnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcUsingCFT
@@ -60,16 +70,17 @@ Resources:
         - Key: Name
           Value: webserver-2
 
-  web3:
+  db1subnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcUsingCFT
       CidrBlock: !Ref database1cidr
+      AvailabilityZone: !Ref TargetAZFordb1
       Tags:
         - Key: Name
           Value: Database-Server-1
 
-  web4:
+  db2subnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcUsingCFT
