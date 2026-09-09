@@ -31,8 +31,7 @@ Resources:
   VpcUsingCFT: # logical ID for VPC
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock:
-        Ref: myVpcCIDR
+      CidrBlock: !Ref myVpcCIDR
       InstanceTenancy: default
       EnableDnsHostnames: true
       Tags:
@@ -46,10 +45,8 @@ Resources:
   web1:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId:
-        Ref: VpcUsingCFT
-      CidrBlock:
-        Ref: web1cidr
+      VpcId: !Ref VpcUsingCFT
+      CidrBlock: !Ref web1cidr
       Tags:
         - Key: Name
           Value: webserver-1
@@ -57,10 +54,8 @@ Resources:
   web2:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId:
-        Ref: VpcUsingCFT
-      CidrBlock:
-        Ref: web2cidr
+      VpcId: !Ref VpcUsingCFT
+      CidrBlock: !Ref web2cidr
       Tags:
         - Key: Name
           Value: webserver-2
@@ -68,10 +63,8 @@ Resources:
   web3:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId:
-        Ref: VpcUsingCFT
-      CidrBlock:
-        Ref: database1cidr
+      VpcId: !Ref VpcUsingCFT
+      CidrBlock: !Ref database1cidr
       Tags:
         - Key: Name
           Value: Database-Server-1
@@ -79,10 +72,8 @@ Resources:
   web4:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId:
-        Ref: VpcUsingCFT
-      CidrBlock:
-        Ref: database2cidr
+      VpcId: !Ref VpcUsingCFT
+      CidrBlock: !Ref database2cidr
       Tags:
         - Key: Name
           Value: Database-Server-2
