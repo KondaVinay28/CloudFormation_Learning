@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating VPC using CFT
+
+Parameters:
+  myVpcCIDR:
+    Description: Custom CIDR
+    Type: String
+    Default: 10.0.0.0/16
+
+  web1cidr:
+    Description: Subnets CIDR
+    Type: String
+    Default: 10.0.1.0/24
+
+  web2cidr:
+    Description: Subnets CIDR
+    Type: String
+    Default: 10.0.2.0/24
+
+  database1cidr:
+    Description: Subnets CIDR
+    Type: String
+    Default: 10.0.3.0/24
+
+  database2cidr:
+    Description: Subnets CIDR
+    Type: String
+    Default: 10.0.4.0/24
+
+Resources:
+  VpcUsingCFT: # logical ID for VPC
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock:
+        Ref: myVpcCIDR
+      InstanceTenancy: default
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: ntier-vpc
+        - Key: Env
+          Value: Dev
+
+  # Create subnets
+
+  web1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VpcUsingCFT
+      CidrBlock:
+        Ref: web1cidr
+      Tags:
+        - Key: Name
+          Value: webserver-1
+
+  web2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VpcUsingCFT
+      CidrBlock:
+        Ref: web2cidr
+      Tags:
+        - Key: Name
+          Value: webserver-2
+
+  web3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VpcUsingCFT
+      CidrBlock:
+        Ref: database1cidr
+      Tags:
+        - Key: Name
+          Value: Database-Server-1
+
+  web4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VpcUsingCFT
+      CidrBlock:
+        Ref: database2cidr
+      Tags:
+        - Key: Name
+          Value: Database-Server-2
