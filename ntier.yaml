@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Creating VPC using CFT
 
 Parameters:
+  # VPC cidr
   myVpcCIDR:
     Description: Custom CIDR
     Type: String
