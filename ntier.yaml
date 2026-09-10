@@ -9,10 +9,22 @@ Parameters:
 
   # Menu for selecting AZ's
   TargetAZForweb1:
+    Default: us-east-1a
+    Description: Select an AZ from the menu
+    Type: AWS::EC2::AvailabilityZone::Name
+
+  TargetAZForweb2:
+    Default: us-east-1b
     Description: Select an AZ from the menu
     Type: AWS::EC2::AvailabilityZone::Name
 
   TargetAZFordb1:
+    Default: us-east-1c
+    Description: Select an AZ from the menu
+    Type: AWS::EC2::AvailabilityZone::Name
+
+  TargetAZFordb2:
+    Default: us-east-1d
     Description: Select an AZ from the menu
     Type: AWS::EC2::AvailabilityZone::Name
 
@@ -36,12 +48,54 @@ Parameters:
     Type: String
     Default: 10.0.4.0/24
 
+    # Parameters for RDS
+
+  DBName:
+    Default: Employee
+    Description: My Database Table Name
+    Type: String
+
+  DBInstanceIdentifier:
+    Default: mydatabase-rds
+    Description: My Database Name
+    Type: String
+
+  AllocatedStorage:
+    Default: 20
+    Description: Storage in GiB
+    Type: Number
+
+  Port:
+    Default: 3306
+    Description: Port number for RDS
+    Type: String
+
+  DBInstanceClass:
+    Default: db.t4g.micro
+    Description: Database Instance Class
+    Type: String
+
+  StorageType:
+    Default: gp2
+    Description: StorageType for RDS
+    Type: String
+
+  Engine:
+    Default: mysql
+    Description: Engine for RDS
+    Type: String
+    AllowedValues:
+      - mysql
+      - postgres
+
+# Create VPC
 Resources:
   VpcUsingCFT: # logical ID for VPC
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref myVpcCIDR
       InstanceTenancy: default
+      EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
@@ -66,6 +120,7 @@ Resources:
     Properties:
       VpcId: !Ref VpcUsingCFT
       CidrBlock: !Ref web2cidr
+      AvailabilityZone: !Ref TargetAZForweb2
       Tags:
         - Key: Name
           Value: webserver-2
@@ -85,6 +140,55 @@ Resources:
     Properties:
       VpcId: !Ref VpcUsingCFT
       CidrBlock: !Ref database2cidr
+      AvailabilityZone: !Ref TargetAZFordb2
       Tags:
         - Key: Name
           Value: Database-Server-2
+
+  # Create Security Group
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: rds-sg
+      GroupDescription: This is for port 3306
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: !Ref myVpcCIDR
+      VpcId: !Ref VpcUsingCFT
+      Tags:
+        - Key: Name
+          Value: rds-Security-Group
+
+  # Create DB Subnet Group
+  MyDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: A DBSubnetGroup for RDS
+      DBSubnetGroupName: mydb-sg
+      SubnetIds:
+        - !Ref db1subnet
+        - !Ref db2subnet
+      Tags:
+        - Key: Name
+          Value: cft-dbsg
+  # Create RDS
+
+  MyDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref DBName # Database Table Name
+      DBInstanceIdentifier: !Ref DBInstanceIdentifier # Database Name
+      AllocatedStorage: !Ref AllocatedStorage
+      StorageType: !Ref StorageType
+      Engine: !Ref Engine
+      EngineVersion: "8.4.9"
+      Port: !Ref Port
+      DBInstanceClass: !Ref DBInstanceClass
+      MasterUsername: admin
+      MasterUserPassword: Admin123
+      MultiAZ: false
+      DBSubnetGroupName: !Ref MyDBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref MySecurityGroup

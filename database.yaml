@@ -3,7 +3,7 @@ Description: Creating RDS using CFT
 
 Parameters:
   DBName:
-    Default: EmployeeT
+    Default: Employee
     Description: My Database Table Name
     Type: String
 
