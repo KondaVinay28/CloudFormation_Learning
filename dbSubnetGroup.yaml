@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating DB-Subnet-Group using CloudFormation
+Resources:
+  MyDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: A DBSubnetGroup for RDS
+      DBSubnetGroupName: mydb-sg
+      SubnetIds:
+        - subnet-0663be6c29120ee94
+        - subnet-011a09e93798da16a
+      Tags:
+        - Key: Name
+          Value: cft-dbsg

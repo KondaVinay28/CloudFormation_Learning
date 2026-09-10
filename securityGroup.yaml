@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating Security Group using CFT
+Resources:
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: rds-sg
+      GroupDescription: This is for port 3306
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 172.31.0.0/16
+      VpcId: vpc-085a2d49e33726332
+      Tags:
+        - Key: Name
+          Value: rds-Security-Group
