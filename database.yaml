@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating RDS using CFT
+Resources:
+  MyDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: personalDB # Database Table Name
+      DBInstanceIdentifier: mypersonalDB # Database Name
+      AllocatedStorage: 20
+      Engine: MySQL
+      EngineVersion: "8.4.9"
+      DBInstanceClass: db.t4g.micro
+      MasterUsername: admin
+      MasterUserPassword: Admin123
+      MultiAZ: false
