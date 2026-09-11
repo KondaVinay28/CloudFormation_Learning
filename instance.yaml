@@ -1,5 +1,8 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Creating and EC2 Instance using CloudFormation
+# -------------------- Parameter Section -----------------------------
+# Parameters:
+
 Resources:
   MyInstance:
     Type: AWS::EC2::Instance
@@ -17,6 +20,14 @@ Resources:
       Tags:
         - Key: Name
           Value: Instance-1
+      # UserData Section to install startup scripts
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update -y
+          sudo apt install -y apache2
+          sudo systemctl start apache2
+          sudo systemctl enable apache2
 
   # Create a VPC
   myVPC:
@@ -99,3 +110,8 @@ Resources:
       GatewayId: !Ref MyIGW
       RouteTableId: !Ref Myrt
       DestinationCidrBlock: 0.0.0.0/0
+#  To display in the outputs section of our stack
+Outputs:
+  Apacheurl:
+    Description: To display the web url of apache2
+    Value: !Sub "http://{MyInstance.PublicIp}"

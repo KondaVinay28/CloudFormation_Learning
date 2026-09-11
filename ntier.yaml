@@ -264,3 +264,10 @@ Resources:
       Tags:
         - Key: Name
           Value: Instance-1
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update -y
+          sudo apt install -y apache2
+          sudo systemctl start apache2
+          sudo systemctl enable apache2
