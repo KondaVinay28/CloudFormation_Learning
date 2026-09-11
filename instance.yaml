@@ -114,4 +114,5 @@ Resources:
 Outputs:
   Apacheurl:
     Description: To display the web url of apache2
-    Value: !Sub "http://{MyInstance.PublicIp}"
+    # Value: !Sub "http://{MyInstance.PublicIp}"
+    Value: !Join ["://", [http, !GetAtt MyInstance.PublicIp]]
