@@ -94,7 +94,7 @@ Resources:
   # Associate IGW to Route Table
   InternetGatewayAssociation:
     Type: AWS::EC2::Route
-    DependsOn: myInternetGatewayVPCattachment
+    DependsOn: myInternetGatewayVPCattachment # Waits until IGW attached to the VPC
     Properties:
       GatewayId: !Ref MyIGW
       RouteTableId: !Ref Myrt

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Creating VPC using CFT
-
+# --------------------------------- Create Parameters Below -----------------------------------------
 Parameters:
   # VPC cidr
   myVpcCIDR:
@@ -88,8 +88,8 @@ Parameters:
     AllowedValues:
       - mysql
       - postgres
-
-# Create VPC
+# ------------------------- Create Resources below -----------------------------
+# Create a VPC
 Resources:
   VpcUsingCFT: # logical ID for VPC
     Type: AWS::EC2::VPC
@@ -157,6 +157,14 @@ Resources:
           FromPort: 3306
           ToPort: 3306
           CidrIp: !Ref myVpcCIDR
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
       VpcId: !Ref VpcUsingCFT
       Tags:
         - Key: Name
@@ -193,3 +201,66 @@ Resources:
       DBSubnetGroupName: !Ref MyDBSubnetGroup
       VPCSecurityGroups:
         - !Ref MySecurityGroup
+
+  # Create Internet Gateway
+  MyIGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: my-igw
+
+  # Attach Internet Gateway to VPC
+  myInternetGatewayVPCattachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VpcUsingCFT
+      InternetGatewayId: !Ref MyIGW
+
+  # Create Route Table
+  Myrt:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcUsingCFT
+      Tags:
+        - Key: Name
+          Value: my-rt
+
+  # Associate Route table with subnets
+  subnetAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref web1subnet
+      RouteTableId: !Ref Myrt
+
+  subnetAssociationSecond:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref web2subnet
+      RouteTableId: !Ref Myrt
+
+  # Associate IGW to Route Table
+  InternetGatewayAssociation:
+    Type: AWS::EC2::Route
+    DependsOn: myInternetGatewayVPCattachment # Waits until IGW attached to the VPC
+    Properties:
+      GatewayId: !Ref MyIGW
+      RouteTableId: !Ref Myrt
+      DestinationCidrBlock: 0.0.0.0/0
+
+  # Create an EC2 Instance
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0b6d9d3d33ba97d99
+      InstanceType: t3.micro
+      KeyName: awsKey2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          SubnetId: !Ref web1subnet
+          GroupSet:
+            - !Ref MySecurityGroup
+      Tags:
+        - Key: Name
+          Value: Instance-1
