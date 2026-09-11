@@ -1,7 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Creating and EC2 Instance using CloudFormation
 # -------------------- Parameter Section -----------------------------
-# Parameters:
+Parameters:
+  createInstance:
+    Description: Do you want to create an EC2 Instance?
+    Type: String
+    Default: "Yes"
+    AllowedValues:
+      - "Yes"
+      - "No"
 
 # Mappings
 Mappings:
@@ -13,9 +20,16 @@ Mappings:
       ubuntu2604: ami-02167eae61967e403
       ubuntu2404: ami-096f5760b00bcd95c
 
+# Conditions
+Conditions:
+  tocreateInstance: !Equals
+    - !Ref createInstance
+    - "Yes"
+
 Resources:
   MyInstance:
     Type: AWS::EC2::Instance
+    Condition: tocreateInstance
     Properties:
       # AvailabilityZone: us-east-1a
       ImageId: !FindInMap
@@ -128,5 +142,6 @@ Resources:
 Outputs:
   Apacheurl:
     Description: To display the web url of apache2
+    Condition: tocreateInstance
     # Value: !Sub "http://{MyInstance.PublicIp}"
     Value: !Join ["://", [http, !GetAtt MyInstance.PublicIp]]
