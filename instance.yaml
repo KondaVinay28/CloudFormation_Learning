@@ -3,12 +3,25 @@ Description: Creating and EC2 Instance using CloudFormation
 # -------------------- Parameter Section -----------------------------
 # Parameters:
 
+# Mappings
+Mappings:
+  UbuntuAMIs:
+    us-east-1:
+      ubuntu2604: ami-0b6d9d3d33ba97d99
+      ubuntu2404: ami-0f8a61b66d1accaee
+    us-west-1:
+      ubuntu2604: ami-02167eae61967e403
+      ubuntu2404: ami-096f5760b00bcd95c
+
 Resources:
   MyInstance:
     Type: AWS::EC2::Instance
     Properties:
       # AvailabilityZone: us-east-1a
-      ImageId: ami-0b6d9d3d33ba97d99
+      ImageId: !FindInMap
+        - UbuntuAMIs
+        - !Ref AWS::Region # This sets the current region when we upload the template in CloudFormation
+        - ubuntu2404
       InstanceType: t3.micro
       KeyName: awsKey2
       NetworkInterfaces:
@@ -110,6 +123,7 @@ Resources:
       GatewayId: !Ref MyIGW
       RouteTableId: !Ref Myrt
       DestinationCidrBlock: 0.0.0.0/0
+
 #  To display in the outputs section of our stack
 Outputs:
   Apacheurl:
