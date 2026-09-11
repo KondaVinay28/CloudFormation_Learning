@@ -271,3 +271,14 @@ Resources:
           sudo apt install -y apache2
           sudo systemctl start apache2
           sudo systemctl enable apache2
+
+# To display the Apache2 url in the outputs section
+Outputs:
+  Apacheurl:
+    Description: To display the web url of apache2
+    Value: !Join ["://", [http, !GetAtt MyInstance.PublicIp]]
+
+  # To display Endpoint of RDS in the outputs section
+  EndpointRds:
+    Description: To display the Endpoint url of RDS
+    Value: !GetAtt MyDatabase.Endpoint.Address
