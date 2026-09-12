@@ -9,6 +9,15 @@ Parameters:
     AllowedValues:
       - "Yes"
       - "No"
+  # Env Parameter
+  Env:
+    Description: Environment Types
+    Type: String
+    Default: Dev
+    AllowedValues:
+      - Dev
+      - Prod
+      - QA
 
 # Mappings
 Mappings:
@@ -19,6 +28,14 @@ Mappings:
     us-west-1:
       ubuntu2604: ami-02167eae61967e403
       ubuntu2404: ami-096f5760b00bcd95c
+  # Env based InstanceType mappings
+  EnvMap:
+    Dev:
+      InstanceType: t3.small
+    Prod:
+      InstanceType: t3.micro
+    QA:
+      InstanceType: m7i-flex.large
 
 # Conditions
 Conditions:
@@ -26,6 +43,7 @@ Conditions:
     - !Ref createInstance
     - "Yes"
 
+#------------------------- Resource Section -----------------------------------
 Resources:
   MyInstance:
     Type: AWS::EC2::Instance
@@ -36,7 +54,7 @@ Resources:
         - UbuntuAMIs
         - !Ref AWS::Region # This sets the current region when we upload the template in CloudFormation
         - ubuntu2404
-      InstanceType: t3.micro
+      InstanceType: !FindInMap [EnvMap, !Ref Env, InstanceType]
       KeyName: awsKey2
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
