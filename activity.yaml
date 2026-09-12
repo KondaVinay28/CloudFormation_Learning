@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Installing nginx in ubuntu instance
+Resources:
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ec2-sg
+      GroupDescription: This is for port 80
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      VpcId: vpc-085a2d49e33726332
+      Tags:
+        - Key: Name
+          Value: nginx-sg
+
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      # AvailabilityZone: us-east-1a
+      ImageId: ami-0b6d9d3d33ba97d99
+      InstanceType: t3.micro
+      KeyName: awsKey2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          SubnetId: subnet-011a09e93798da16a
+          GroupSet:
+            - !Ref MySecurityGroup
+      Tags:
+        - Key: Name
+          Value: nginx-server
+      # UserData Section to install startup scripts
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update -y
+          sudo apt install nginx -y
+          sudo systemctl start nginx
+          sudo systemctl enable nginx
+
+Outputs:
+  nginx:
+    Description: To display the web url of nginx
+    Value: !Join ["://", [http, !GetAtt MyInstance.PublicIp]]
