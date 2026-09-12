@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Creating VPC using CFT
+Description: Create ntier architecture using CloudFormation
 # --------------------------------- Create Parameters Below -----------------------------------------
 Parameters:
   # VPC cidr
@@ -7,6 +7,18 @@ Parameters:
     Description: Custom CIDR
     Type: String
     Default: 10.0.0.0/16
+
+  # Parameter Environment to create RDS and DB subnet group
+  Environment:
+    Description: Create RDS
+    Type: String
+    AllowedValues: [Dev, Prod]
+
+  # Manually select ec2 instance name
+  InstanceName:
+    Description: Enter the EC2 Instance Name
+    Type: String
+    Default: Instance-1
 
   # Menu for selecting AZ's
   TargetAZForweb1:
@@ -88,6 +100,11 @@ Parameters:
     AllowedValues:
       - mysql
       - postgres
+
+# --------------------------Create Conditions below ----------------------------
+Conditions:
+  IsEnvironment: !Equals [!Ref Environment, Prod]
+
 # ------------------------- Create Resources below -----------------------------
 # Create a VPC
 Resources:
@@ -173,6 +190,7 @@ Resources:
   # Create DB Subnet Group
   MyDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
+    Condition: IsEnvironment
     Properties:
       DBSubnetGroupDescription: A DBSubnetGroup for RDS
       DBSubnetGroupName: mydb-sg
@@ -186,6 +204,7 @@ Resources:
 
   MyDatabase:
     Type: AWS::RDS::DBInstance
+    Condition: IsEnvironment
     Properties:
       DBName: !Ref DBName # Database Table Name
       DBInstanceIdentifier: !Ref DBInstanceIdentifier # Database Name
@@ -263,7 +282,7 @@ Resources:
             - !Ref MySecurityGroup
       Tags:
         - Key: Name
-          Value: Instance-1
+          Value: !Ref InstanceName
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -281,4 +300,5 @@ Outputs:
   # To display Endpoint of RDS in the outputs section
   EndpointRds:
     Description: To display the Endpoint url of RDS
+    Condition: IsEnvironment
     Value: !GetAtt MyDatabase.Endpoint.Address

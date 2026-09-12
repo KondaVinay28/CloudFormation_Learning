@@ -1,5 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Creating VPC using CFT
+Parameters:
+  vpcName:
+    Description: Enter the vpc Name
+    Type: String
 Resources:
   VpcUsingCFT:
     Type: AWS::EC2::VPC
@@ -8,4 +12,8 @@ Resources:
       InstanceTenancy: default
       Tags:
         - Key: Name
-          Value: vpc-cft
+          Value: !Ref vpcName
+Outputs:
+  vpcId:
+    Description: The VPC ID
+    Value: !Ref VpcUsingCFT
